@@ -6,7 +6,7 @@ from functools import wraps
 app = Flask(__name__)
 
 
-app.config['ENV'] = 'development'
+app.config['ENV'] = 'production'
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = b'\x1f.n\xc9\xf0\xec\xd6/`\x95u\xbd\xc5?\x80",n\xb6&\xaa\xf9.\x92'
 app.config['TESTING'] = False
