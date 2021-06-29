@@ -2,19 +2,27 @@ import sqlite3
 from flask import g
 
 
-DATABASE = 'S:\\PROJECTS\\FLASK_projects\\membership_system_restfull_api_flask\\database.db'
+DATABASE = 'S:\\PROJECTS\\FLASK_projects\\membership_system_restfull_api_flask\\members.db'
 
 
 def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row
-    return db
+    conn = getattr(g, '_database', None)
+    if conn is None:
+        conn = g._database = sqlite3.connect(DATABASE)
+        conn.row_factory = sqlite3.Row
+    return conn
 
 
 def query_db(query, args=(), one=False):
-    cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
-    return (rv[0] if rv else None) if one else rv
+    conn = get_db()
+    cursor = conn.execute(query, args)
+    data = cursor.fetchall()
+    cursor.close()
+    return (data[0] if data else None) if one else data
+
+
+def insert_db(query, args=()):
+    conn = get_db()
+    cursor = conn.execute(query, args)
+    conn.commit()
+    cursor.close()

@@ -1,5 +1,5 @@
-from flask import Flask, g
-from db_setup import get_db, query_db
+from flask import Flask, g, json, request, jsonify
+from db_setup import get_db, query_db, insert_db
 
 app = Flask(__name__)
 
@@ -32,7 +32,17 @@ def get_members():
 
 @app.route('/member/', methods=['POST'])
 def add_member():
-    return 'this adds a new member'
+    new_member_data = request.get_json()
+
+    name = new_member_data['name']
+    email = new_member_data['email']
+    level = new_member_data['level']
+
+    insert_db('insert into members (name, email, level) values (?, ?, ?)', [name, email, level])
+
+    new_member = query_db('select id, name, email, level from members where name = ?', [name], one=True)
+
+    return  jsonify({'id': new_member['id'], 'name': new_member['name'],'email': new_member['email'], 'level': new_member['level']})
 
 
 @app.route('/member/<int:member_id>/', methods=['GET'])
