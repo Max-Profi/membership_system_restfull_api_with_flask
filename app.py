@@ -4,6 +4,10 @@ from db_setup import get_db, query_db, insert_db, update_db, delete_db
 app = Flask(__name__)
 
 
+api_username = 'admin'
+api_password = 'password'
+
+
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = b'\x1f.n\xc9\xf0\xec\xd6/`\x95u\xbd\xc5?\x80",n\xb6&\xaa\xf9.\x92'
@@ -28,18 +32,25 @@ def close_connection(exception):
 @app.route('/member/', methods=['GET'])
 def get_members():
 
-    get_all_members = query_db('select id, name, email, level from members')
+    username = request.authorization.username
+    password = request.authorization.password
 
-    all_members = []
-    for member in get_all_members:
-        member_dict ={}
-        member_dict['id'] = member['id']
-        member_dict['name'] = member['name']
-        member_dict['email'] = member['email']
-        member_dict['level'] = member['level']
-        all_members.append(member_dict)
+    if username == api_username and password == api_password:
 
-    return jsonify({'members': all_members})
+        get_all_members = query_db('select id, name, email, level from members')
+
+        all_members = []
+        for member in get_all_members:
+            member_dict ={}
+            member_dict['id'] = member['id']
+            member_dict['name'] = member['name']
+            member_dict['email'] = member['email']
+            member_dict['level'] = member['level']
+            all_members.append(member_dict)
+
+        return jsonify({'members': all_members, 'username': username, 'password': password})
+
+    return jsonify({'message': 'authentication failed'}), 401
 
 
 @app.route('/member/', methods=['POST'])
