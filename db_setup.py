@@ -13,6 +13,15 @@ def get_db():
     return conn
 
 
+# CREATE
+def insert_db(query, args=()):
+    conn = get_db()
+    cursor = conn.execute(query, args)
+    conn.commit()
+    cursor.close()
+
+
+# READ
 def query_db(query, args=(), one=False):
     conn = get_db()
     cursor = conn.execute(query, args)
@@ -21,7 +30,16 @@ def query_db(query, args=(), one=False):
     return (data[0] if data else None) if one else data
 
 
-def insert_db(query, args=()):
+# UPDATE
+def update_db(query, args=()):
+    conn = get_db()
+    cursor = conn.execute(query, args)
+    conn.commit()
+    cursor.close()
+
+
+# DELETE
+def delete_db(query, args=()):
     conn = get_db()
     cursor = conn.execute(query, args)
     conn.commit()

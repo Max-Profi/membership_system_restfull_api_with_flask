@@ -1,5 +1,5 @@
 from flask import Flask, g, json, request, jsonify
-from db_setup import get_db, query_db, insert_db
+from db_setup import get_db, query_db, insert_db, update_db, delete_db
 
 app = Flask(__name__)
 
@@ -54,24 +54,36 @@ def add_member():
 
     new_member = query_db('select id, name, email, level from members where name = ?', [name], one=True)
 
-    return  jsonify({'id': new_member['id'], 'name': new_member['name'],'email': new_member['email'], 'level': new_member['level']})
+    return jsonify({'member': {'id': new_member['id'], 'name': new_member['name'], 'email': new_member['email'], 'level': new_member['level']}})
 
 
 @app.route('/member/<int:member_id>/', methods=['GET'])
 def get_member(member_id):
-    return 'this returns one member by ID'
+
+    a_member = query_db('select id, name, email, level from members where id = ?', [member_id], one=True)
+
+    return jsonify({'member': {'id': a_member['id'], 'name': a_member['name'], 'email': a_member['email'], 'level': a_member['level']}})
 
 
 @app.route('/member/<int:member_id>/', methods=['PUT', 'PATCH'])
 def edit_member(member_id):
-    return 'this updates a member by ID'
+    member_data = request.get_json()
+
+    name = member_data['name']
+    email = member_data['email']
+    level = member_data['level']
+
+    update_db('update members set name = ?, email = ?, level = ? where id = ?', [name, email, level, member_id])
+
+    updated_member = query_db('select id, name, email, level from members where id = ?', [member_id], one=True)
+
+    return jsonify({'member': {'id': updated_member['id'], 'name': updated_member['name'], 'email': updated_member['email'], 'level': updated_member['level']}})
 
 
 @app.route('/member/<int:member_id>/', methods=['DELETE'])
 def delete_member(member_id):
-    return 'this delets a member by ID'
-
-
+    delete_db('delete from members where id = ?', [member_id])
+    return jsonify({'message': 'the member has been deleted'})
 
 
 
