@@ -27,7 +27,19 @@ def close_connection(exception):
 
 @app.route('/member/', methods=['GET'])
 def get_members():
-    return 'this returns all the memberss'
+
+    get_all_members = query_db('select id, name, email, level from members')
+
+    all_members = []
+    for member in get_all_members:
+        member_dict ={}
+        member_dict['id'] = member['id']
+        member_dict['name'] = member['name']
+        member_dict['email'] = member['email']
+        member_dict['level'] = member['level']
+        all_members.append(member_dict)
+
+    return jsonify({'members': all_members})
 
 
 @app.route('/member/', methods=['POST'])
